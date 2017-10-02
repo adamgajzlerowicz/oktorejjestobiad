@@ -3,24 +3,34 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 --import Html.Events exposing ( onClick )
 
--- component import example
---import Components.Hello exposing ( hello )
-
-
--- APP
-main : Program Never Model Msg
-main =
-  Html.beginnerProgram { model = model, view = view, update = update }
-
-
 -- MODEL
 type alias Model =
     {
         lunchAt: String
     }
 
-model : number
-model = 0
+initialModel : Model
+initialModel =
+    {
+        lunchAt = "foo"
+    }
+
+
+whatevahCmd : String -> Cmd Msg
+whatevahCmd query =
+    "dupa"
+
+-- APP
+main : Program Never Model Msg
+main =
+ Html.program
+         { view = view
+         , update = update
+         , init = (initialModel, whatevahCmd)
+         , subscriptions = \_ -> Sub.none
+         }
+
+
 
 
 -- UPDATE
