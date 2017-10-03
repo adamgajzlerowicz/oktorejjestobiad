@@ -1,62 +1,63 @@
 module Main exposing (..)
+
 import Html exposing (..)
 import Html.Attributes exposing (..)
---import Html.Events exposing ( onClick )
 
+
+--import Html.Events exposing ( onClick )
 -- MODEL
+
+
 type alias Model =
     {
-        lunchAt: String
+        lunchAt : String
     }
+
 
 initialModel : Model
 initialModel =
     {
-        lunchAt = "foo"
+    lunchAt = "foo"
     }
 
 
-whatevahCmd : String -> Cmd Msg
-whatevahCmd query =
-    "dupa"
+init : ( Model, Cmd Msg )
+init =
+    ( initialModel, Cmd.none )
 
--- APP
+
 main : Program Never Model Msg
 main =
- Html.program
-         { view = view
-         , update = update
-         , init = (initialModel, whatevahCmd)
-         , subscriptions = \_ -> Sub.none
-         }
+    Html.program
+        { view = view
+        , update = update
+        , init = init
+        , subscriptions = \_ -> Sub.none
+        }
 
 
+type Msg
+    = NoOp
+    | Increment
 
 
--- UPDATE
-type Msg = NoOp | Increment
-
-update : Msg -> Model -> Model
+update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    model
---  case msg of
---    NoOp -> model
---    Increment -> model + 1
+    ( model, Cmd.none )
 
 
 view : Model -> Html Msg
 view model =
-    div [id "page-wrapper"] [
-        div [
-            class "container"
-        ][
-            div [class "sto-trzy"]
-            []
-            , div [class "sto-piec"]
-            []
-        ]
-        , div [class "inner-container"]
-            [
-             text "dupa"
+    div [ id "page-wrapper" ]
+        [ div
+            [ class "container"
             ]
-    ]
+            [ div [ class "sto-trzy" ]
+                []
+            , div [ class "sto-piec" ]
+                []
+            ]
+        , div [ class "inner-container" ]
+            [ text model.lunchAt
+            ]
+        ]
