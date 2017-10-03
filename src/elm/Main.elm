@@ -4,13 +4,11 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Time exposing (Time)
 
---import Html.Events exposing ( onClick )
--- MODEL
-
-
 type alias Model =
     {
         lunchAt : Time
+        , lowerRoomOk: Maybe Bool
+        , higherRoomOk: Maybe Bool
     }
 
 
@@ -18,6 +16,8 @@ initialModel : Model
 initialModel =
     {
        lunchAt = 9872345987
+       , lowerRoomOk = Nothing
+       , higherRoomOk = Nothing
     }
 
 
@@ -52,7 +52,13 @@ view model =
         [ div
             [ class "container"
             ]
-            [ div [ class "sto-trzy" ]
+            [ div [ class ( if model.lowerRoomOk == Just False then
+                    "sto-trzy bad"
+                else if model.lowerRoomOk == Just True then
+                    "sto-trzy good"
+                else
+                    "sto-trzy"
+                ) ]
                 []
             , div [ class "sto-piec" ]
                 []
