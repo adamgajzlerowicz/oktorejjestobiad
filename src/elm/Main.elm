@@ -3,6 +3,7 @@ module Main exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Time exposing (Time)
+import Html.Events exposing ( onClick )
 
 type alias Model =
     {
@@ -37,14 +38,17 @@ main =
 
 
 type Msg
-    = NoOp
-    | Increment
+    = ChangeTeamState
+    | IncrementTime
+    | DecrementTime
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    ( model, Cmd.none )
-
+    case msg of
+        ChangeTeamState -> ({model | lowerRoomOk = Just False}, Cmd.none)
+        IncrementTime -> ({ model | lowerRoomOk = Just False }, Cmd.none)
+        DecrementTime -> ({ model | lowerRoomOk = Just False }, Cmd.none)
 
 view : Model -> Html Msg
 view model =
@@ -79,7 +83,7 @@ view model =
                                             [
                                                 text "-"
                                             ]
-                                         , span [class "good"]
+                                         , span [class "good", onClick IncrementTime]
                                             [
                                                 text "+"
                                             ]

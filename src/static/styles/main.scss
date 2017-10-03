@@ -175,3 +175,13 @@ span {
   vertical-align: center;
   flex: 1;
 }
+
+.sto-piec.good, .sto-trzy.good{
+  background-color: green;
+  opacity: .6
+}
+
+.sto-piec.bad, .sto-trzy.bad{
+  background-color: red;
+  opacity: .6;
+}
