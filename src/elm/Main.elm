@@ -48,6 +48,19 @@ type Msg
     | IncrementTime
     | DecrementTime
 
+decide : Maybe Bool -> StanGlodu -> Maybe Bool
+decide current state
+    =
+        if state == Glodni && (current == Nothing || current == Just False)  then
+         Just True
+        else if state == NieCzekajcie && (current == Nothing || current == Just True) then
+         Just False
+        else if state == Glodni && current == Just True then
+         Nothing
+        else if state == NieCzekajcie && current == Just False then
+         Nothing
+        else
+          current
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -56,18 +69,8 @@ update msg model =
         ChangeTeamState team state ->
             (
                 case team of
-                    StoTrzy -> if state == Glodni && (model.lowerRoomOk == Nothing || model.lowerRoomOk == Just False)  then
-                            { model | lowerRoomOk = Just True}
-                        else if state == NieCzekajcie && (model.lowerRoomOk == Nothing || model.lowerRoomOk == Just True) then
-                            { model | lowerRoomOk = Just False}
-                        else if state == Glodni && model.lowerRoomOk == Just True then
-                            { model | lowerRoomOk = Nothing}
-                        else if state == NieCzekajcie && model.lowerRoomOk == Just False then
-                            { model | lowerRoomOk = Nothing}
-                        else
-                            model
-                    StoPiec -> { model | lowerRoomOk = Just False}
-
+                    StoTrzy -> { model | lowerRoomOk = (decide model.lowerRoomOk state)}
+                    StoPiec -> { model | higherRoomOk = (decide model.higherRoomOk state)}
             , Cmd.none)
         IncrementTime ->
             (model , Cmd.none)
@@ -89,8 +92,14 @@ view model =
                     "sto-trzy"
                 ) ]
                 []
-            , div [ class "sto-piec" ]
-                []
+            , div [ class ( if model.higherRoomOk == Just False then
+                  "sto-piec bad"
+              else if model.higherRoomOk == Just True then
+                  "sto-piec good"
+              else
+                  "sto-piec"
+              ) ]
+              []
             ]
         , div [ class "inner-container" ]
             [
@@ -134,7 +143,7 @@ view model =
                     , div []
                         [
                             div [] [
-                                span [] [text "103"]
+                                span [] [text "105"]
                             ]
                             , div [] [
                                 div [class "good"] [
