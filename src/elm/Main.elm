@@ -21,7 +21,6 @@ initialModel =
        , higherRoomOk = Nothing
     }
 
-
 init : ( Model, Cmd Msg )
 init =
     ( initialModel, Cmd.none )
@@ -36,19 +35,45 @@ main =
         , subscriptions = \_ -> Sub.none
         }
 
+type Team
+    = StoTrzy
+    | StoPiec
+
+type StanGlodu
+    = Glodni
+    | NieCzekajcie
 
 type Msg
-    = ChangeTeamState
+    = ChangeTeamState Team StanGlodu
     | IncrementTime
     | DecrementTime
+
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        ChangeTeamState -> ({model | lowerRoomOk = Just False}, Cmd.none)
-        IncrementTime -> ({ model | lowerRoomOk = Just False }, Cmd.none)
-        DecrementTime -> ({ model | lowerRoomOk = Just False }, Cmd.none)
+        ChangeTeamState team state ->
+            (
+                case team of
+                    StoTrzy -> if state == Glodni && (model.lowerRoomOk == Nothing || model.lowerRoomOk == Just False)  then
+                            { model | lowerRoomOk = Just True}
+                        else if state == NieCzekajcie && (model.lowerRoomOk == Nothing || model.lowerRoomOk == Just True) then
+                            { model | lowerRoomOk = Just False}
+                        else if state == Glodni && model.lowerRoomOk == Just True then
+                            { model | lowerRoomOk = Nothing}
+                        else if state == NieCzekajcie && model.lowerRoomOk == Just False then
+                            { model | lowerRoomOk = Nothing}
+                        else
+                            model
+                    StoPiec -> { model | lowerRoomOk = Just False}
+
+            , Cmd.none)
+        IncrementTime ->
+            (model , Cmd.none)
+        DecrementTime ->
+            (model , Cmd.none)
+--            ({ model | lowerRoomOk = Just False }, Cmd.none)
 
 view : Model -> Html Msg
 view model =
@@ -79,7 +104,7 @@ view model =
                                     ]
                                 , div [ class "inc-dec"]
                                     [
-                                         span [class "bad"]
+                                         span [class "bad", onClick DecrementTime]
                                             [
                                                 text "-"
                                             ]
@@ -99,10 +124,10 @@ view model =
                             ]
                             , div [] [
                                 div [class "good"] [
-                                    span [] [text "Jestesmy glodni"]
+                                    span [onClick (ChangeTeamState StoTrzy Glodni)] [text "Jestesmy glodni"]
                                 ]
                                 ,div [class "bad"] [
-                                    span [] [text "Nie czekajcie"]
+                                    span [onClick (ChangeTeamState StoTrzy NieCzekajcie)] [text "Nie czekajcie"]
                                 ]
                             ]
                         ]
@@ -113,10 +138,10 @@ view model =
                             ]
                             , div [] [
                                 div [class "good"] [
-                                    span [] [text "Jestesmy glodni"]
+                                    span [onClick (ChangeTeamState StoPiec Glodni)] [text "Jestesmy glodni"]
                                 ]
                                 ,div [class "bad"] [
-                                    span [] [text "Nie czekajcie"]
+                                    span [onClick (ChangeTeamState StoPiec NieCzekajcie)] [text "Nie czekajcie"]
                                 ]
                             ]
                         ]
