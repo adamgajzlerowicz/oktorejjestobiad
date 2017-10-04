@@ -44,7 +44,7 @@ type StanGlodu
     | NieCzekajcie
 
 type Msg
-    = ChangeTeamState Team StanGlodu
+    = ChangeTeamState StanGlodu Team
     | IncrementTime
     | DecrementTime
 
@@ -66,7 +66,7 @@ decide current state
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        ChangeTeamState team state ->
+        ChangeTeamState state team ->
             (
                 case team of
                     StoTrzy -> { model | lowerRoomOk = (decide model.lowerRoomOk state)}
@@ -76,7 +76,23 @@ update msg model =
             (model , Cmd.none)
         DecrementTime ->
             (model , Cmd.none)
---            ({ model | lowerRoomOk = Just False }, Cmd.none)
+
+--component =
+--    div []
+--        [
+--            div [] [
+--                span [] [text "105"]
+--            ]
+--            , div [] [
+--                div [class "bad"] [
+--                    span [onClick (ChangeTeamState StoPiec NieCzekajcie)] [text "Nie czekajcie"]
+--                ]
+--                ,div [class "good"] [
+--                     span [onClick (ChangeTeamState StoPiec Glodni)] [text "Jestesmy glodni"]
+--                 ]
+--            ]
+--        ]
+
 
 view : Model -> Html Msg
 view model =
@@ -132,12 +148,13 @@ view model =
                                 span [] [text "103"]
                             ]
                             , div [] [
-                                div [class "good"] [
-                                    span [onClick (ChangeTeamState StoTrzy Glodni)] [text "Jestesmy glodni"]
+
+                                div [class "bad"] [
+                                    span [onClick (ChangeTeamState NieCzekajcie StoTrzy)] [text "Nie czekajcie"]
                                 ]
-                                ,div [class "bad"] [
-                                    span [onClick (ChangeTeamState StoTrzy NieCzekajcie)] [text "Nie czekajcie"]
-                                ]
+                                ,div [class "good"] [
+                                     span [onClick (ChangeTeamState Glodni StoTrzy)] [text "Jestesmy glodni"]
+                                 ]
                             ]
                         ]
                     , div []
@@ -146,12 +163,12 @@ view model =
                                 span [] [text "105"]
                             ]
                             , div [] [
-                                div [class "good"] [
-                                    span [onClick (ChangeTeamState StoPiec Glodni)] [text "Jestesmy glodni"]
+                                div [class "bad"] [
+                                    span [onClick (ChangeTeamState NieCzekajcie StoPiec)] [text "Nie czekajcie"]
                                 ]
-                                ,div [class "bad"] [
-                                    span [onClick (ChangeTeamState StoPiec NieCzekajcie)] [text "Nie czekajcie"]
-                                ]
+                                ,div [class "good"] [
+                                     span [onClick (ChangeTeamState Glodni StoPiec)] [text "Jestesmy glodni"]
+                                 ]
                             ]
                         ]
             ]
