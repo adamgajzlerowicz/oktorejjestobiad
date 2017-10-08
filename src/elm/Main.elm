@@ -65,33 +65,40 @@ decide current state
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
+
     case msg of
+
         ChangeTeamState state team ->
+            let
+                decisionLower = decide model.lowerRoomOk  state
+                decisionHigher = decide model.higherRoomOk state
+            in
             (
                 case team of
-                    StoTrzy -> { model | lowerRoomOk = (decide model.lowerRoomOk state)}
-                    StoPiec -> { model | higherRoomOk = (decide model.higherRoomOk state)}
+                    StoTrzy -> { model | lowerRoomOk = decisionLower }
+                    StoPiec -> { model | higherRoomOk = decisionHigher}
             , Cmd.none)
         IncrementTime ->
             (model , Cmd.none)
         DecrementTime ->
             (model , Cmd.none)
 
---component =
---    div []
---        [
---            div [] [
---                span [] [text "105"]
---            ]
---            , div [] [
---                div [class "bad"] [
---                    span [onClick (ChangeTeamState StoPiec NieCzekajcie)] [text "Nie czekajcie"]
---                ]
---                ,div [class "good"] [
---                     span [onClick (ChangeTeamState StoPiec Glodni)] [text "Jestesmy glodni"]
---                 ]
---            ]
---        ]
+component: String -> Team -> Html Msg
+component content room =
+    div []
+        [
+            div [] [
+                span [class "darkgray"] [text content]
+            ]
+            , div [] [
+                div [class "bad"] [
+                    span [onClick (ChangeTeamState NieCzekajcie room)] [text "Nie czekajcie"]
+                ]
+                ,div [class "good"] [
+                     span [onClick (ChangeTeamState Glodni room)] [text "Jestesmy glodni"]
+                 ]
+            ]
+        ]
 
 
 view : Model -> Html Msg
@@ -123,7 +130,7 @@ view model =
                     [
                         div [ class "clock-container"]
                             [
-                                div []
+                                div [ class "darkgray" ]
                                     [
                                         text (toString model.lunchAt)
                                     ]
@@ -142,35 +149,8 @@ view model =
                     ]
 
                 , div [ class "inner-bottom"] [
-                    div []
-                        [
-                            div [] [
-                                span [] [text "103"]
-                            ]
-                            , div [] [
-
-                                div [class "bad"] [
-                                    span [onClick (ChangeTeamState NieCzekajcie StoTrzy)] [text "Nie czekajcie"]
-                                ]
-                                ,div [class "good"] [
-                                     span [onClick (ChangeTeamState Glodni StoTrzy)] [text "Jestesmy glodni"]
-                                 ]
-                            ]
-                        ]
-                    , div []
-                        [
-                            div [] [
-                                span [] [text "105"]
-                            ]
-                            , div [] [
-                                div [class "bad"] [
-                                    span [onClick (ChangeTeamState NieCzekajcie StoPiec)] [text "Nie czekajcie"]
-                                ]
-                                ,div [class "good"] [
-                                     span [onClick (ChangeTeamState Glodni StoPiec)] [text "Jestesmy glodni"]
-                                 ]
-                            ]
-                        ]
+                    component "103" StoTrzy
+                    , component "105" StoPiec
             ]
         ]
     ]

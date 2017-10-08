@@ -93,11 +93,11 @@ body, html, #main, #page-wrapper {
   top: 50%;
   left: 50%;
   margin-top: -200px;
-  margin-left: -200px;
+  margin-left: -300px;
   display: flex;
 
   color: black;
-  width: 400px;
+  width: 600px;
   height: 400px;
   flex-direction: column;
 }
@@ -120,7 +120,9 @@ body, html, #main, #page-wrapper {
   flex: 0.5;
   display: flex;
 }
-
+.darkgray{
+  color: darkgray;
+}
 .clock-container {
   display: flex;
   flex: 1;
@@ -132,11 +134,13 @@ body, html, #main, #page-wrapper {
   flex: 1;
   text-align: center;
   vertical-align: center;
-  max-height: 40px;
+  max-height: 70px;
+  font-size: 70px;
 }
 
 .inc-dec span {
   padding: 10px;
+  font-size: 70px;
 }
 
 .inner-bottom div {
