@@ -18,32 +18,6 @@
 <script src="https://www.gstatic.com/firebasejs/4.5.0/firebase-firestore.js"></script>
 <script src="https://www.gstatic.com/firebasejs/4.5.0/firebase-messaging.js"></script>
 
-<script>
-    const config = {
-        apiKey: "AIzaSyA37dJRaGpYOTVb0SfGK7_atWtGNjqB67c",
-        authDomain: "oktorejjestobiad.firebaseapp.com",
-        databaseURL: "https://oktorejjestobiad.firebaseio.com",
-        storageBucket: "oktorejjestobiad.appspot.com",
-        messagingSenderId: "<SENDER_ID>",
-    };
-    firebase.initializeApp(config);
-    const database = firebase.database();
-    const auth = firebase.auth();
 
-    auth.signInWithEmailAndPassword('nelf86@gmai.com', '123456');
-
-    auth.onAuthStateChanged(() => {
-        database.ref('dupa/' + Math.random().toString().split('.')[1]).set({
-            foo: 'bar'
-        });
-
-        dataSource = database.ref('dupa/');
-
-        dataSource.on('value', (snapshot) => {
-            console.log('data updated: ', snapshot.val());
-        });
-    });
-
-</script>
 </body>
 </html>
