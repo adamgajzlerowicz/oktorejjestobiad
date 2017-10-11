@@ -2,6 +2,7 @@
 require('./styles/main.scss');
 // var $ = jQuery = require('../../node_modules/jquery/dist/jquery.js');           // <--- remove if jQuery not needed
 // require('../../node_modules/bootstrap-sass/assets/javascripts/bootstrap.js');   // <--- remove if Bootstrap's JS not needed
+const Elm = require('../elm/Main');
 
 const config = {
     apiKey: "AIzaSyA37dJRaGpYOTVb0SfGK7_atWtGNjqB67c",
@@ -11,6 +12,7 @@ const config = {
     storageBucket: "oktorejjestobiad.appspot.com",
     messagingSenderId: "913002641856"
 };
+
 firebase.initializeApp(config);
 const database = firebase.database();
 const provider = new firebase.auth.GoogleAuthProvider();
@@ -19,17 +21,16 @@ provider.addScope('https://www.googleapis.com/auth/plus.login');
 firebase.auth().onAuthStateChanged(function(user) {
     if (user) {
         console.log('Is logged in');
-        database.ref('dupa/' + Math.random().toString().split('.')[1]).set({
+        database.ref('oktorejjestobiad/' + Math.random().toString().split('.')[1]).set({
             foo: 'bar'
         });
 
-        dataSource = database.ref('dupa/');
+        const dataSource = database.ref('oktorejjestobiad/');
 
         dataSource.on('value', (snapshot) => {
             console.log('data updated: ', snapshot.val());
-        })
+        });
 
-        var Elm = require('../elm/Main');
         Elm.Main.embed(document.getElementById('main'));
 
     } else {

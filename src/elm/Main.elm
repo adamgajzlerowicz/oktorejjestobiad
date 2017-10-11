@@ -2,14 +2,17 @@ module Main exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Time exposing (Time)
-import Html.Events exposing ( onClick )
+import Time exposing (Time, second, now)
+import Html.Events exposing (onClick)
+import Time.Format exposing (format)
+import Task exposing (..)
 
 type alias Model =
     {
         lunchAt : Time
         , lowerRoomOk: Maybe Bool
         , higherRoomOk: Maybe Bool
+        , currentTime: Time
     }
 
 
@@ -19,11 +22,12 @@ initialModel =
        lunchAt = 9872345987
        , lowerRoomOk = Nothing
        , higherRoomOk = Nothing
+       , currentTime = 0
     }
 
 init : ( Model, Cmd Msg )
 init =
-    ( initialModel, Cmd.none )
+    ( initialModel, getTime )
 
 
 main : Program Never Model Msg
@@ -32,8 +36,12 @@ main =
         { view = view
         , update = update
         , init = init
-        , subscriptions = \_ -> Sub.none
+        , subscriptions = subscriptions
         }
+
+subscriptions: Model -> Sub Msg
+subscriptions model =
+    Time.every second SetTime
 
 type Team
     = StoTrzy
@@ -47,6 +55,7 @@ type Msg
     = ChangeTeamState StanGlodu Team
     | IncrementTime
     | DecrementTime
+    | SetTime Time
 
 decide : Maybe Bool -> StanGlodu -> Maybe Bool
 decide current state
@@ -62,17 +71,20 @@ decide current state
         else
           current
 
+getTime =
+        Task.perform SetTime Time.now
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-
     case msg of
 
         ChangeTeamState state team ->
+
             let
                 decisionLower = decide model.lowerRoomOk  state
                 decisionHigher = decide model.higherRoomOk state
             in
+
             (
                 case team of
                     StoTrzy -> { model | lowerRoomOk = decisionLower }
@@ -82,6 +94,8 @@ update msg model =
             (model , Cmd.none)
         DecrementTime ->
             (model , Cmd.none)
+        SetTime newTime->
+            ({model | currentTime = newTime}, Cmd.none)
 
 component: String -> Team -> Html Msg
 component content room =
@@ -132,7 +146,7 @@ view model =
                             [
                                 div [ class "darkgray" ]
                                     [
-                                        text (toString model.lunchAt)
+                                        text (format "%H:%M:%S" model.currentTime)
                                     ]
                                 , div [ class "inc-dec"]
                                     [
