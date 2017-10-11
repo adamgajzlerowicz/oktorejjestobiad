@@ -56,6 +56,7 @@ type Msg
     | IncrementTime
     | DecrementTime
     | SetTime Time
+    | SetInitialTime Time
 
 decide : Maybe Bool -> StanGlodu -> Maybe Bool
 decide current state
@@ -72,30 +73,33 @@ decide current state
           current
 
 getTime =
-        Task.perform SetTime Time.now
+        Task.perform SetInitialTime Time.now
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
 
         ChangeTeamState state team ->
-
             let
                 decisionLower = decide model.lowerRoomOk  state
                 decisionHigher = decide model.higherRoomOk state
             in
-
             (
                 case team of
                     StoTrzy -> { model | lowerRoomOk = decisionLower }
                     StoPiec -> { model | higherRoomOk = decisionHigher}
             , Cmd.none)
         IncrementTime ->
-            (model , Cmd.none)
+            ({model | lunchAt = model.lunchAt + 60000}, Cmd.none)
         DecrementTime ->
-            (model , Cmd.none)
+            ({model | lunchAt = model.lunchAt - 60000}, Cmd.none)
         SetTime newTime->
             ({model | currentTime = newTime}, Cmd.none)
+        SetInitialTime newTime ->
+            ({model |
+                currentTime = newTime
+                , lunchAt = newTime
+            }, Cmd.none)
 
 component: String -> Team -> Html Msg
 component content room =
@@ -157,7 +161,8 @@ view model =
                             [
                                 div [ class "darkgray" ]
                                     [
-                                        text (format "%H:%M:%S" model.currentTime)
+                                        div [class "timeBig"] [text (format "%H:%M:%S" model.lunchAt)]
+                                        , div [class "timeSmall"] [text (format "%H:%M:%S" model.currentTime)]
                                     ]
                                 , div [ class "inc-dec"]
                                     [
