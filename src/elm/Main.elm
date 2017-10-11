@@ -99,6 +99,9 @@ update msg model =
 
 component: String -> Team -> Html Msg
 component content room =
+
+
+
     div []
         [
             div [] [
@@ -117,9 +120,17 @@ component content room =
 
 view : Model -> Html Msg
 view model =
+    let
+        containerClass =
+            if (model.lowerRoomOk == Just True && model.higherRoomOk == Just True)
+            then "container positive"
+            else if  (model.lowerRoomOk == Just False && model.higherRoomOk == Just False)
+            then "container negative"
+            else "container"
+    in
     div [ id "page-wrapper" ]
         [ div
-            [ class "container"
+            [ class containerClass
             ]
             [ div [ class ( if model.lowerRoomOk == Just False then
                     "sto-trzy bad"
