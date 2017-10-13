@@ -5,8 +5,8 @@ import Html.Attributes exposing (..)
 import Time exposing (Time, second, now)
 import Html.Events exposing (onClick)
 import Time.Format exposing (format)
-import Time.DateTime as DateTime exposing (fromTimestamp, toTimestamp)
 import Task exposing (..)
+import Time.DateTime as DateTime exposing (fromTimestamp, toTimestamp)
 
 type alias Model =
     {
@@ -20,7 +20,7 @@ type alias Model =
 initialModel : Model
 initialModel =
     {
-       lunchAt = 9872345987
+       lunchAt = 0
        , lowerRoomOk = Nothing
        , higherRoomOk = Nothing
        , currentTime = 0
@@ -33,11 +33,11 @@ init initData =
               initialModel
           Just data ->
               data
-        , getTime
-      )
+        , Cmd.none
+    )
 
 
---main : Program flags Model Msg
+main : Program (Maybe Model) Model Msg
 main =
     Html.programWithFlags
         { view = view
@@ -63,7 +63,6 @@ type Msg
     | IncrementTime
     | DecrementTime
     | SetTime Time
-    | SetInitialTime Time
 
 decide : Maybe Bool -> StanGlodu -> Maybe Bool
 decide current state
@@ -79,15 +78,9 @@ decide current state
         else
           current
 
-getTime =
-        Task.perform SetInitialTime Time.now
-
-
-
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-
         ChangeTeamState state team ->
             let
                 decisionLower = decide model.lowerRoomOk  state
@@ -104,11 +97,6 @@ update msg model =
             ({model | lunchAt = model.lunchAt - 60000}, Cmd.none)
         SetTime newTime->
             ({model | currentTime = newTime}, Cmd.none)
-        SetInitialTime newTime ->
-            ({model |
-                currentTime = newTime
-                , lunchAt = newTime
-            }, Cmd.none)
 
 component: String -> Team -> Html Msg
 component content room =

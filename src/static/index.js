@@ -18,39 +18,30 @@ const database = firebase.database();
 const provider = new firebase.auth.GoogleAuthProvider();
 provider.addScope('https://www.googleapis.com/auth/plus.login');
 
-firebase.auth().onAuthStateChanged(function (user) {
-    if (user) {
-        console.log('Is logged in');
-        // database.ref('oktorejjestobiad/' + Math.random().toString().split('.')[1]).set({
-        //     foo: 'bar'
-        // });
+// database.ref('oktorejjestobiad/' + Math.random().toString().split('.')[1]).set({
+//     foo: 'bar'
+// });
 
-        const dataSource = database.ref('oktorejjestobiad/');
+const dataSource = database.ref('oktorejjestobiad/');
 
-        dataSource.once('value').then((snapshot) => {
-
-            const flags = Object.assign({},
-                {
-                    currentTime: 0,
-                    lunchAt: 0,
-                    higherRoomOk: null,
-                    lowerRoomOk: null
-                },
-                snapshot.val());
-            Elm.Main.embed(document.getElementById('main'), flags);
-        });
-
-        dataSource.on('value', (snapshot) => {
-            console.log('data updated: ', snapshot.val());
-        });
-
-        // app = Elm.Main.embed(document.getElementById('main'));
-
-        // app.ports.check.subscribe(function(model) {
-        //    console.log(model);
-        // });
-
-    } else {
-        firebase.auth().signInWithRedirect(provider);
-    }
+dataSource.once('value').then((snapshot) => {
+    console.log('received data');
+    const flags = Object.assign({},
+        {
+            currentTime: 0,
+            lunchAt: parseInt(snapshot.val().lunchAt.toString() + '000'),
+            higherRoomOk: null,
+            lowerRoomOk: null
+        },
+        );
+    Elm.Main.embed(document.getElementById('main'), flags);
 });
+
+dataSource.on('value', (snapshot) => {
+    console.log('data updated: ', snapshot.val());
+});
+
+// app.ports.check.subscribe(function(model) {
+//    console.log(model);
+// });
+
