@@ -26,14 +26,13 @@ const dataSource = database.ref('oktorejjestobiad/');
 
 dataSource.once('value').then((snapshot) => {
     console.log('received data');
-    const flags = Object.assign({},
-        {
+    const flags = Object.assign({}, {
             currentTime: 0,
-            lunchAt: parseInt(snapshot.val().lunchAt.toString() + '000'),
+            lunchAt: snapshot.val().lunchAt,
             higherRoomOk: null,
             lowerRoomOk: null
-        },
-        );
+        }
+    );
     Elm.Main.embed(document.getElementById('main'), flags);
 });
 
