@@ -1,10 +1,11 @@
-module Main exposing (..)
+port module Main exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Time exposing (Time, second, now)
 import Html.Events exposing (onClick)
 import Time.Format exposing (format)
+import Time.DateTime as DateTime exposing (fromTimestamp, toTimestamp)
 import Task exposing (..)
 
 type alias Model =
@@ -25,14 +26,20 @@ initialModel =
        , currentTime = 0
     }
 
-init : ( Model, Cmd Msg )
-init =
-    ( initialModel, getTime )
+init : Maybe Model -> ( Model, Cmd Msg )
+init initData =
+    ( case initData of
+          Nothing ->
+              initialModel
+          Just data ->
+              data
+        , getTime
+      )
 
 
-main : Program Never Model Msg
+--main : Program flags Model Msg
 main =
-    Html.program
+    Html.programWithFlags
         { view = view
         , update = update
         , init = init
@@ -75,6 +82,8 @@ decide current state
 getTime =
         Task.perform SetInitialTime Time.now
 
+
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
@@ -103,9 +112,6 @@ update msg model =
 
 component: String -> Team -> Html Msg
 component content room =
-
-
-
     div []
         [
             div [] [
