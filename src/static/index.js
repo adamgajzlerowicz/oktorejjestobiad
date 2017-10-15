@@ -1,4 +1,4 @@
- const Elm = require('../elm/Main');
+const Elm = require('../elm/Main');
 
 const config = {
     apiKey: "AIzaSyA37dJRaGpYOTVb0SfGK7_atWtGNjqB67c",
@@ -14,10 +14,9 @@ const database = firebase.database();
 
 const app = Elm.Main.embed(document.getElementById('main'));
 
-
 const dataSource = database.ref('oktorejjestobiad/');
 
-dataSource.on('value', (snapshot) => {
+dataSource.on('value', function (snapshot) {
     app.ports.apiData.send(Object.assign({}, {
             higherRoomOk: null,
             lowerRoomOk: null
@@ -26,8 +25,7 @@ dataSource.on('value', (snapshot) => {
 });
 
 
-
-app.ports.updateApi.subscribe(function(model) {
+app.ports.updateApi.subscribe(function (model) {
     console.log(model);
     database.ref('oktorejjestobiad/').set(model);
 });
