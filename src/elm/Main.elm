@@ -19,6 +19,7 @@ type alias Model =
     {
         state: TransportedModel
         , currentTime: Time
+        , loading: Bool
     }
 
 
@@ -31,6 +32,7 @@ initialModel =
             , higherRoomOk = Nothing
         }
        , currentTime = 0
+       , loading = True
     }
 
 init : ( Model, Cmd Msg )
@@ -122,7 +124,7 @@ update msg model =
             ({model | currentTime = newTime}, Cmd.none)
 
         SetState newState ->
-            ({model | state = newState}, Cmd.none)
+            ({model | state = newState, loading = False}, Cmd.none)
 
 component: String -> Team -> Html Msg
 component content room =
@@ -135,7 +137,7 @@ component content room =
                 div [class "bad"] [
                     span [onClick (ChangeTeamState NieCzekajcie room)] [text "Nie czekajcie"]
                 ]
-                ,div [class "good"] [
+                , div [class "good"] [
                      span [onClick (ChangeTeamState Glodni room)] [text "Jestesmy glodni"]
                  ]
             ]
@@ -152,55 +154,58 @@ view model =
             then "container negative"
             else "container"
     in
-    div [ id "page-wrapper" ]
-        [ div
-            [ class containerClass
-            ]
-            [ div [ class ( if model.state.lowerRoomOk == Just False then
-                    "sto-trzy bad"
-                else if model.state.lowerRoomOk == Just True then
-                    "sto-trzy good"
-                else
-                    "sto-trzy"
-                ) ]
-                []
-            , div [ class ( if model.state.higherRoomOk == Just False then
-                  "sto-piec bad"
-              else if model.state.higherRoomOk == Just True then
-                  "sto-piec good"
-              else
-                  "sto-piec"
-              ) ]
-              []
-            ]
-        , div [ class "inner-container" ]
-            [
-                div [ class "inner-top"]
-                    [
-                        div [ class "clock-container"]
-                            [
-                                div [ class "darkgray" ]
-                                    [
-                                        div [class "timeBig"] [text (format "%H:%M:%S" model.state.lunchAt)]
-                                        , div [class "timeSmall"] [text (format "%H:%M:%S" model.currentTime)]
-                                    ]
-                                , div [ class "inc-dec"]
-                                    [
-                                         span [class "bad", onClick DecrementTime]
-                                            [
-                                                text "-"
-                                            ]
-                                         , span [class "good", onClick IncrementTime]
-                                            [
-                                                text "+"
-                                            ]
-                                    ]
-                            ]
-                    ]
+    if model.loading == False then
+        div [ id "page-wrapper" ]
+            [ div
+                [ class containerClass
+                ]
+                [ div [ class ( if model.state.lowerRoomOk == Just False then
+                        "sto-trzy bad"
+                    else if model.state.lowerRoomOk == Just True then
+                        "sto-trzy good"
+                    else
+                        "sto-trzy"
+                    ) ]
+                    []
+                , div [ class ( if model.state.higherRoomOk == Just False then
+                      "sto-piec bad"
+                  else if model.state.higherRoomOk == Just True then
+                      "sto-piec good"
+                  else
+                      "sto-piec"
+                  ) ]
+                  []
+                ]
+            , div [ class "inner-container" ]
+                [
+                    div [ class "inner-top"]
+                        [
+                            div [ class "clock-container"]
+                                [
+                                    div [ class "darkgray" ]
+                                        [
+                                            div [class "timeBig"] [text (format "%H:%M:%S" model.state.lunchAt)]
+                                            , div [class "timeSmall"] [text (format "%H:%M:%S" model.currentTime)]
+                                        ]
+                                    , div [ class "inc-dec"]
+                                        [
+                                             span [class "bad", onClick DecrementTime]
+                                                [
+                                                    text "-"
+                                                ]
+                                             , span [class "good", onClick IncrementTime]
+                                                [
+                                                    text "+"
+                                                ]
+                                        ]
+                                ]
+                        ]
 
-                , div [ class "inner-bottom"] [
-                    component "103" StoTrzy
-                    , component "105" StoPiec
+                    , div [ class "inner-bottom"] [
+                        component "103" StoTrzy
+                        , component "105" StoPiec
+                ]
             ]
         ]
-    ]
+    else
+        div [] [text "loading"]
