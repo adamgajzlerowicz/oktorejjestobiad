@@ -5,7 +5,6 @@ import Html.Attributes exposing (..)
 import Time exposing (Time, second, now)
 import Html.Events exposing (onClick)
 import Time.Format exposing (format)
---import Task exposing (..)
 
 type alias TransportedModel =
     {
@@ -13,7 +12,6 @@ type alias TransportedModel =
         , lowerRoomOk: Maybe Bool
         , higherRoomOk: Maybe Bool
     }
-
 
 type alias Model =
     {
@@ -99,11 +97,9 @@ update msg model =
                 stoTrzyState = {slice | lowerRoomOk = decisionLower}
                 stoPiecState = {slice | higherRoomOk = decisionHigher}
             in
-            (
-                case team of
-                    StoTrzy -> { model | state = stoTrzyState }
-                    StoPiec -> { model | state = stoPiecState}
-            , Cmd.none)
+            case team of
+                StoTrzy -> ({ model | state = stoTrzyState }, updateApi stoTrzyState)
+                StoPiec -> ({ model | state = stoPiecState }, updateApi stoPiecState)
 
         IncrementTime ->
             let
@@ -111,7 +107,7 @@ update msg model =
                 lunchCommencingAt = model.state.lunchAt + 60000 * 5
                 updated = {state | lunchAt = lunchCommencingAt}
             in
-                ({model | state = updated}, Cmd.none)
+                ({model | state = updated}, updateApi updated)
 
         DecrementTime ->
             let
@@ -119,12 +115,14 @@ update msg model =
                 lunchCommencingAt = model.state.lunchAt - 60000 * 5
                 updated = {state | lunchAt = lunchCommencingAt}
             in
-                ({model | state = updated}, Cmd.none)
+                ({model | state = updated}, updateApi updated)
         SetTime newTime ->
             ({model | currentTime = newTime}, Cmd.none)
 
         SetState newState ->
             ({model | state = newState, loading = False}, Cmd.none)
+
+port updateApi: TransportedModel -> Cmd msg
 
 component: String -> Team -> Html Msg
 component content room =

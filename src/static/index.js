@@ -14,30 +14,21 @@ const database = firebase.database();
 
 const app = Elm.Main.embed(document.getElementById('main'));
 
-// database.ref('oktorejjestobiad/' + Math.random().toString().split('.')[1]).set({
-//     foo: 'bar'
-// });
 
 const dataSource = database.ref('oktorejjestobiad/');
 
-dataSource.once('value').then((snapshot) => {
-    const flags = Object.assign({}, {
-            currentTime: 0,
-            lunchAt: snapshot.val().lunchAt,
+dataSource.on('value', (snapshot) => {
+    app.ports.apiData.send(Object.assign({}, {
             higherRoomOk: null,
             lowerRoomOk: null
-        }
-    );
-    app.ports.apiData.send(flags);
-});
-
-dataSource.on('value', (snapshot) => {
-    console.log('data updated: ', snapshot.val());
+        }, snapshot.val()
+    ));
 });
 
 
 
-// app.ports.check.subscribe(function(model) {
-//    console.log(model);
-// });
+app.ports.updateApi.subscribe(function(model) {
+    console.log(model);
+    database.ref('oktorejjestobiad/').set(model);
+});
 
