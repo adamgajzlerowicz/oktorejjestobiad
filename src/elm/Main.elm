@@ -5,14 +5,19 @@ import Html.Attributes exposing (..)
 import Time exposing (Time, second, now)
 import Html.Events exposing (onClick)
 import Time.Format exposing (format)
-import Task exposing (..)
-import Time.DateTime as DateTime exposing (fromTimestamp, toTimestamp)
+--import Task exposing (..)
 
-type alias Model =
+type alias TransportedModel =
     {
         lunchAt : Time
         , lowerRoomOk: Maybe Bool
         , higherRoomOk: Maybe Bool
+    }
+
+
+type alias Model =
+    {
+        state: TransportedModel
         , currentTime: Time
     }
 
@@ -20,9 +25,11 @@ type alias Model =
 initialModel : Model
 initialModel =
     {
-       lunchAt = 0
-       , lowerRoomOk = Nothing
-       , higherRoomOk = Nothing
+        state = {
+            lunchAt = 0
+            , lowerRoomOk = Nothing
+            , higherRoomOk = Nothing
+        }
        , currentTime = 0
     }
 
@@ -42,6 +49,8 @@ main =
 subscriptions: Model -> Sub Msg
 subscriptions model =
     Time.every second SetTime
+
+port apiData: (TransportedModel -> msg ) -> Sub msg
 
 type Team
     = StoTrzy
@@ -76,18 +85,33 @@ update msg model =
     case msg of
         ChangeTeamState state team ->
             let
-                decisionLower = decide model.lowerRoomOk  state
-                decisionHigher = decide model.higherRoomOk state
+                decisionLower = decide model.state.lowerRoomOk  state
+                decisionHigher = decide model.state.higherRoomOk state
+                slice = model.state
+                stoTrzyState = {slice | lowerRoomOk = decisionLower}
+                stoPiecState = {slice | higherRoomOk = decisionHigher}
             in
             (
                 case team of
-                    StoTrzy -> { model | lowerRoomOk = decisionLower }
-                    StoPiec -> { model | higherRoomOk = decisionHigher}
+                    StoTrzy -> { model | state = stoTrzyState }
+                    StoPiec -> { model | state = stoPiecState}
             , Cmd.none)
+
         IncrementTime ->
-            ({model | lunchAt = model.lunchAt + 60000}, Cmd.none)
+            let
+                state = model.state
+                lunchCommencingAt = model.state.lunchAt + 60000
+                updated = {state | lunchAt = lunchCommencingAt}
+            in
+                ({model | state = updated}, Cmd.none)
+
         DecrementTime ->
-            ({model | lunchAt = model.lunchAt - 60000}, Cmd.none)
+            let
+                state = model.state
+                lunchCommencingAt = model.state.lunchAt - 60000
+                updated = {state | lunchAt = lunchCommencingAt}
+            in
+                ({model | state = updated}, Cmd.none)
         SetTime newTime->
             ({model | currentTime = newTime}, Cmd.none)
 
@@ -113,9 +137,9 @@ view : Model -> Html Msg
 view model =
     let
         containerClass =
-            if (model.lowerRoomOk == Just True && model.higherRoomOk == Just True)
+            if (model.state.lowerRoomOk == Just True && model.state.higherRoomOk == Just True)
             then "container positive"
-            else if  (model.lowerRoomOk == Just False && model.higherRoomOk == Just False)
+            else if  (model.state.lowerRoomOk == Just False && model.state.higherRoomOk == Just False)
             then "container negative"
             else "container"
     in
@@ -123,17 +147,17 @@ view model =
         [ div
             [ class containerClass
             ]
-            [ div [ class ( if model.lowerRoomOk == Just False then
+            [ div [ class ( if model.state.lowerRoomOk == Just False then
                     "sto-trzy bad"
-                else if model.lowerRoomOk == Just True then
+                else if model.state.lowerRoomOk == Just True then
                     "sto-trzy good"
                 else
                     "sto-trzy"
                 ) ]
                 []
-            , div [ class ( if model.higherRoomOk == Just False then
+            , div [ class ( if model.state.higherRoomOk == Just False then
                   "sto-piec bad"
-              else if model.higherRoomOk == Just True then
+              else if model.state.higherRoomOk == Just True then
                   "sto-piec good"
               else
                   "sto-piec"
@@ -148,7 +172,7 @@ view model =
                             [
                                 div [ class "darkgray" ]
                                     [
-                                        div [class "timeBig"] [text (format "%H:%M:%S" model.lunchAt)]
+                                        div [class "timeBig"] [text (format "%H:%M:%S" model.state.lunchAt)]
                                         , div [class "timeSmall"] [text (format "%H:%M:%S" model.currentTime)]
                                     ]
                                 , div [ class "inc-dec"]

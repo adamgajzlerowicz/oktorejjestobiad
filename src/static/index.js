@@ -11,8 +11,8 @@ const config = {
 
 firebase.initializeApp(config);
 const database = firebase.database();
-const provider = new firebase.auth.GoogleAuthProvider();
-provider.addScope('https://www.googleapis.com/auth/plus.login');
+
+const app = Elm.Main.embed(document.getElementById('main'));
 
 // database.ref('oktorejjestobiad/' + Math.random().toString().split('.')[1]).set({
 //     foo: 'bar'
@@ -24,17 +24,19 @@ dataSource.once('value').then((snapshot) => {
     const flags = Object.assign({}, {
             currentTime: 0,
             lunchAt: snapshot.val().lunchAt,
-            higherRoomOk: null,
+            higherRoomOk: true,
             lowerRoomOk: null
         }
     );
-    const app = Elm.Main.embed(document.getElementById('main'));
+    app.ports.apiData.send(flags);
 
 });
 
 dataSource.on('value', (snapshot) => {
     console.log('data updated: ', snapshot.val());
 });
+
+
 
 // app.ports.check.subscribe(function(model) {
 //    console.log(model);
