@@ -72,10 +72,12 @@
 
     * {
         font-family: 'Raleway', sans-serif !important;
+
+    }
+    span {
         animation: x 3s ease 0s infinite;
         transition: 1s ease-out;
     }
-
     body, html, #main, #page-wrapper {
         height: 100%
     }
@@ -111,7 +113,7 @@
         margin-left: 0;
     }
 
-    .inner-container {
+    .inner-container, .loading {
         position: absolute;
         top: 50%;
         left: 50%;
@@ -123,6 +125,13 @@
         width: 600px;
         height: 400px;
         flex-direction: column;
+    }
+
+    .loading{
+        color: white;
+        text-align: center;
+        flex: 1;
+        justify-content: center;
     }
 
     .inner-top {

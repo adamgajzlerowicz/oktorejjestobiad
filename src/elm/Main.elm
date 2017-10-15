@@ -108,7 +108,7 @@ update msg model =
         IncrementTime ->
             let
                 state = model.state
-                lunchCommencingAt = model.state.lunchAt + 60000
+                lunchCommencingAt = model.state.lunchAt + 60000 * 5
                 updated = {state | lunchAt = lunchCommencingAt}
             in
                 ({model | state = updated}, Cmd.none)
@@ -116,7 +116,7 @@ update msg model =
         DecrementTime ->
             let
                 state = model.state
-                lunchCommencingAt = model.state.lunchAt - 60000
+                lunchCommencingAt = model.state.lunchAt - 60000 * 5
                 updated = {state | lunchAt = lunchCommencingAt}
             in
                 ({model | state = updated}, Cmd.none)
@@ -154,29 +154,30 @@ view model =
             then "container negative"
             else "container"
     in
-    if model.loading == False then
-        div [ id "page-wrapper" ]
-            [ div
-                [ class containerClass
-                ]
-                [ div [ class ( if model.state.lowerRoomOk == Just False then
-                        "sto-trzy bad"
-                    else if model.state.lowerRoomOk == Just True then
-                        "sto-trzy good"
-                    else
-                        "sto-trzy"
-                    ) ]
-                    []
-                , div [ class ( if model.state.higherRoomOk == Just False then
-                      "sto-piec bad"
-                  else if model.state.higherRoomOk == Just True then
-                      "sto-piec good"
-                  else
-                      "sto-piec"
-                  ) ]
-                  []
-                ]
-            , div [ class "inner-container" ]
+    div [ id "page-wrapper" ]
+        [ div
+            [ class containerClass
+            ]
+            [ div [ class ( if model.state.lowerRoomOk == Just False then
+                    "sto-trzy bad"
+                else if model.state.lowerRoomOk == Just True then
+                    "sto-trzy good"
+                else
+                    "sto-trzy"
+                ) ]
+                []
+            , div [ class ( if model.state.higherRoomOk == Just False then
+                  "sto-piec bad"
+              else if model.state.higherRoomOk == Just True then
+                  "sto-piec good"
+              else
+                  "sto-piec"
+              ) ]
+              []
+            ]
+        ,
+        if model.loading == False then
+            div [ class "inner-container" ]
                 [
                     div [ class "inner-top"]
                         [
@@ -206,6 +207,7 @@ view model =
                         , component "105" StoPiec
                 ]
             ]
-        ]
-    else
-        div [] [text "loading"]
+         else
+            div [class "loading"] [text "...loading"]
+    ]
+
