@@ -24,12 +24,11 @@ dataSource.once('value').then((snapshot) => {
     const flags = Object.assign({}, {
             currentTime: 0,
             lunchAt: snapshot.val().lunchAt,
-            higherRoomOk: true,
+            higherRoomOk: null,
             lowerRoomOk: null
         }
     );
     app.ports.apiData.send(flags);
-
 });
 
 dataSource.on('value', (snapshot) => {

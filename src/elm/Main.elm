@@ -46,11 +46,16 @@ main =
         , subscriptions = subscriptions
         }
 
+port apiData: (TransportedModel -> msg ) -> Sub msg
+
 subscriptions: Model -> Sub Msg
 subscriptions model =
-    Time.every second SetTime
+    Sub.batch
+    [
+        Time.every second SetTime
+        , apiData SetState
+    ]
 
-port apiData: (TransportedModel -> msg ) -> Sub msg
 
 type Team
     = StoTrzy
@@ -65,6 +70,7 @@ type Msg
     | IncrementTime
     | DecrementTime
     | SetTime Time
+    | SetState TransportedModel
 
 decide : Maybe Bool -> StanGlodu -> Maybe Bool
 decide current state
@@ -112,8 +118,11 @@ update msg model =
                 updated = {state | lunchAt = lunchCommencingAt}
             in
                 ({model | state = updated}, Cmd.none)
-        SetTime newTime->
+        SetTime newTime ->
             ({model | currentTime = newTime}, Cmd.none)
+
+        SetState newState ->
+            ({model | state = newState}, Cmd.none)
 
 component: String -> Team -> Html Msg
 component content room =
