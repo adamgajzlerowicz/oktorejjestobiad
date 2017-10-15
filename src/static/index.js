@@ -1,8 +1,4 @@
-// pull in desired CSS/SASS files
-require('./styles/main.scss');
-// var $ = jQuery = require('../../node_modules/jquery/dist/jquery.js');           // <--- remove if jQuery not needed
-// require('../../node_modules/bootstrap-sass/assets/javascripts/bootstrap.js');   // <--- remove if Bootstrap's JS not needed
-const Elm = require('../elm/Main');
+ const Elm = require('../elm/Main');
 
 const config = {
     apiKey: "AIzaSyA37dJRaGpYOTVb0SfGK7_atWtGNjqB67c",
@@ -25,7 +21,6 @@ provider.addScope('https://www.googleapis.com/auth/plus.login');
 const dataSource = database.ref('oktorejjestobiad/');
 
 dataSource.once('value').then((snapshot) => {
-    console.log('received data');
     const flags = Object.assign({}, {
             currentTime: 0,
             lunchAt: snapshot.val().lunchAt,
@@ -33,7 +28,8 @@ dataSource.once('value').then((snapshot) => {
             lowerRoomOk: null
         }
     );
-    Elm.Main.embed(document.getElementById('main'), flags);
+    const app = Elm.Main.embed(document.getElementById('main'));
+
 });
 
 dataSource.on('value', (snapshot) => {

@@ -6,23 +6,19 @@ const autoprefixer = require('autoprefixer');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
-
 const prod = 'production';
 const dev = 'development';
 
-// determine build env
 const TARGET_ENV = process.env.npm_lifecycle_event === 'build' ? prod : dev;
 const isDev = TARGET_ENV === dev;
 const isProd = TARGET_ENV === prod;
 
-// entry and output path/filename variables
 const entryPath = path.join(__dirname, 'src/static/index.js');
 const outputPath = path.join(__dirname, 'dist');
 const outputFilename = isProd ? '[name]-[hash].js' : '[name].js'
 
 console.log('WEBPACK GO! Building for ' + TARGET_ENV);
 
-// common webpack config (valid for dev and prod)
 const commonConfig = {
     output: {
         path: outputPath,
@@ -53,7 +49,6 @@ const commonConfig = {
     ]
 };
 
-// additional webpack settings for local env (when invoked by 'npm start')
 if (isDev === true) {
     module.exports = merge(commonConfig, {
         entry: [
@@ -61,7 +56,6 @@ if (isDev === true) {
             entryPath
         ],
         devServer: {
-            // serve index.html in place of 404 responses
             historyApiFallback: true,
             contentBase: './src',
             hot: true
@@ -78,9 +72,6 @@ if (isDev === true) {
                         debug: true
                     }
                 }]
-            },{
-                test: /\.sc?ss$/,
-                use: ['style-loader', 'css-loader', 'postcss-loader', 'sass-loader']
             }]
         }
     });

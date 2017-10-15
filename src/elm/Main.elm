@@ -26,20 +26,13 @@ initialModel =
        , currentTime = 0
     }
 
-init : Maybe Model -> ( Model, Cmd Msg )
-init initData =
-    ( case initData of
-          Nothing ->
-              initialModel
-          Just data ->
-              data
-        , Cmd.none
-    )
+init : ( Model, Cmd Msg )
+init =
+    (initialModel, Cmd.none)
 
-
-main : Program (Maybe Model) Model Msg
+main : Program Never Model Msg
 main =
-    Html.programWithFlags
+    Html.program
         { view = view
         , update = update
         , init = init
