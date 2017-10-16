@@ -6,6 +6,7 @@ import Time exposing (Time, second, now)
 import Html.Events exposing (onClick)
 import Time.Format exposing (format)
 import Http exposing (..)
+import Json.Decode as Decode
 
 type alias TransportedModel =
     {
@@ -70,7 +71,9 @@ type Msg
     | DecrementTime
     | SetTime Time
     | SetState TransportedModel
-    | Notify (Result Http.Error String)
+    | Notify
+    | Noop
+
 
 decide : Maybe Bool -> StanGlodu -> Maybe Bool
 decide current state
@@ -125,6 +128,9 @@ update msg model =
         Notify ->
             (model, notify model.state)
 
+        Noop ->
+            (model, Cmd.none)
+
 port updateApi: TransportedModel -> Cmd msg
 
 notify: TransportedModel -> Cmd Msg
@@ -132,11 +138,14 @@ notify state =
     let
         url =
           "https://hooks.slack.com/services/" ++ "key"
-        request =
-          Http.post url decodeGifUrl
-      in
-        Http.send NewGif request
+    in
+        Http.post url Http.emptyBody (Decode.list Decode.string)
 
+
+
+decodeResponse : Decode.Decoder String
+decodeResponse =
+  Decode.at [] Decode.string
 
 component: String -> Team -> Html Msg
 component content room =
