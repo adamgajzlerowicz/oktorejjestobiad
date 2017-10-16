@@ -5,6 +5,7 @@ import Html.Attributes exposing (..)
 import Time exposing (Time, second, now)
 import Html.Events exposing (onClick)
 import Time.Format exposing (format)
+import Http exposing (..)
 
 type alias TransportedModel =
     {
@@ -19,7 +20,6 @@ type alias Model =
         , currentTime: Time
         , loading: Bool
     }
-
 
 initialModel : Model
 initialModel =
@@ -56,7 +56,6 @@ subscriptions model =
         , apiData SetState
     ]
 
-
 type Team
     = StoTrzy
     | StoPiec
@@ -71,6 +70,7 @@ type Msg
     | DecrementTime
     | SetTime Time
     | SetState TransportedModel
+    | Notify (Result Http.Error String)
 
 decide : Maybe Bool -> StanGlodu -> Maybe Bool
 decide current state
@@ -122,7 +122,21 @@ update msg model =
         SetState newState ->
             ({model | state = newState, loading = False}, Cmd.none)
 
+        Notify ->
+            (model, notify model.state)
+
 port updateApi: TransportedModel -> Cmd msg
+
+notify: TransportedModel -> Cmd Msg
+notify state =
+    let
+        url =
+          "https://hooks.slack.com/services/" ++ "key"
+        request =
+          Http.post url decodeGifUrl
+      in
+        Http.send NewGif request
+
 
 component: String -> Team -> Html Msg
 component content room =
@@ -197,6 +211,10 @@ view model =
                                                     text "+"
                                                 ]
                                         ]
+                                    , div []
+                                        [span [class "notify", onClick Notify] [
+                                            text "notify"
+                                        ]]
                                 ]
                         ]
 
